@@ -1,0 +1,84 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title" data-sw="Uchambuzi wa Jinsia" data-en="Gender Analysis">Uchambuzi wa Jinsia</h1>
+    </div>
+    
+    <div class="filter-bar">
+        <div class="filter-selects">
+            <select class="filter-select" data-sw-label="Tarehe" data-en-label="Date">
+                <option data-sw="Juni 2026" data-en="June 2026">Juni 2026</option>
+                <option data-sw="Mei 2026" data-en="May 2026">Mei 2026</option>
+            </select>
+            <select class="filter-select" data-sw-label="Kata" data-en-label="Ward">
+                <option data-sw="Zote" data-en="All">Zote</option>
+                <option>Kinondoni</option>
+                <option>Ilala</option>
+                <option>Temeke</option>
+            </select>
+            <select class="filter-select" data-sw-label="Huduma" data-en-label="Service">
+                <option data-sw="Zote" data-en="All">Zote</option>
+                <option data-sw="Maji" data-en="Water">Maji</option>
+                <option data-sw="Usafi" data-en="Sanitation">Usafi</option>
+                <option data-sw="Taa" data-en="Lighting">Taa</option>
+                <option data-sw="Usafiri" data-en="Transport">Usafiri</option>
+            </select>
+            <button class="btn-primary" data-sw="Omba" data-en="Apply">Omba</button>
+        </div>
+    </div>
+    
+    <h2 class="section-title" data-sw="Maarifa Muhimu" data-en="Key Insights">Maarifa Muhimu</h2>
+    <div class="insights-grid">
+        {% for insight in insights %}
+        <div class="insight-card border-{{ insight.color }}">
+            <p class="insight-text">{{ insight.text_sw }}</p>
+        </div>
+        {% empty %}
+        <div class="insight-card border-green">
+            <p class="insight-text">Wanawake wanaripoti matatizo ya taa mara 3x zaidi ya wanaume huko Temeke.</p>
+        </div>
+        <div class="insight-card border-amber">
+            <p class="insight-text">Kata ya Kinondoni ina ongezeko la 42% la ripoti za maji wiki hii.</p>
+        </div>
+        <div class="insight-card border-teal">
+            <p class="insight-text">78% ya ripoti za usafi zinatoka kwa wanawake huko Ilala.</p>
+        </div>
+        <div class="insight-card border-purple">
+            <p class="insight-text">Ripoti za usafiri zina mgawanyo sawa zaidi (1.2:1 F:M) kuliko huduma zingine.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <h2 class="section-title" data-sw="Jedwali la Ulinganisho wa Jinsia" data-en="Gender Comparison Matrix">Jedwali la Ulinganisho wa Jinsia</h2>
+    
+    <div class="actions-bar">
+        <a href="/api/reports/export/csv/" class="btn-secondary">📥 <span data-sw="Pakua CSV" data-en="Download CSV">Pakua CSV</span></a>
+    </div>
+    
+    <div class="comparison-grid">
+        <div class="comparison-header">
+            <span data-sw="Huduma" data-en="Service">Huduma</span>
+            <span data-sw="Wanawake" data-en="Female">Wanawake</span>
+            <span data-sw="Wanaume" data-en="Male">Wanaume</span>
+            <span data-sw="Jumla" data-en="Total">Jumla</span>
+            <span data-sw="Uwiano" data-en="Ratio">Uwiano</span>
+            <span data-sw="Mgawanyo" data-en="Distribution">Mgawanyo</span>
+        </div>
+        
+        {% for svc in service_comparison %}
+        <div class="comparison-row">
+            <span class="service-name">{{ svc.service_name }} {{ svc.icon }}</span>
+            <span class="stat-female">{{ svc.female }}</span>
+            <span class="stat-male">{{ svc.male }}</span>
+            <span class="stat-total">{{ svc.total }}</span>
+            <span class="stat-ratio">{{ svc.ratio }}</span>
+            <div class="ratio-bar">
+                <div class="ratio-fill" style="width: {{ svc.female_pct }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

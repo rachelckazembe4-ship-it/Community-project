@@ -1,0 +1,79 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title" data-sw="Ripoti" data-en="Reports">Ripoti</h1>
+        <div class="page-subtitle" data-sw="Ripoti Zote" data-en="All Reports">Ripoti Zote</div>
+    </div>
+    
+    <div class="filter-bar">
+        <div class="filter-pills">
+            <a href="?status=all" class="pill-btn {% if status_filter == 'all' %}active{% endif %}">
+                All <span class="count">{{ total_reports }}</span>
+            </a>
+            <a href="?status=pending" class="pill-btn {% if status_filter == 'pending' %}active{% endif %}">
+                Pending <span class="count">2</span>
+            </a>
+            <a href="?status=submitted" class="pill-btn {% if status_filter == 'submitted' %}active{% endif %}">
+                Submitted <span class="count">3</span>
+            </a>
+            <a href="?status=resolved" class="pill-btn {% if status_filter == 'resolved' %}active{% endif %}">
+                Resolved <span class="count">3</span>
+            </a>
+        </div>
+        
+        <div class="actions-bar">
+            <input type="text" class="search-input" data-sw-placeholder="Tafuta ripoti..." data-en-placeholder="Search reports..." placeholder="Tafuta ripoti...">
+            <a href="#" class="btn-primary">+ <span data-sw="Ripoti Mpya" data-en="New Report">Ripoti Mpya</span></a>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th data-sw="HUDUMA" data-en="SERVICE">HUDUMA</th>
+                    <th data-sw="MAELEZO" data-en="DESCRIPTION">MAELEZO</th>
+                    <th data-sw="KATA / WARD" data-en="WARD">KATA / WARD</th>
+                    <th data-sw="TAREHE" data-en="DATE">TAREHE</th>
+                    <th data-sw="JINSIA" data-en="GENDER">JINSIA</th>
+                    <th data-sw="HALI" data-en="STATUS">HALI</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr class="table-row">
+                    <td class="cell-id">{{ report.id }}</td>
+                    <td class="cell-service">
+                        <span class="service-icon {% if report.service_type == 'water' %}service-water{% elif report.service_type == 'sanitation' %}service-sanitation{% elif report.service_type == 'lighting' %}service-lighting{% else %}service-transport{% endif %}">
+                            {% if report.service_type == 'water' %}💧{% elif report.service_type == 'sanitation' %}🧹{% elif report.service_type == 'lighting' %}💡{% else %}🚌{% endif %}
+                        </span>
+                    </td>
+                    <td class="cell-desc">{{ report.description|truncatechars:50|default:"No description" }}</td>
+                    <td class="cell-text">{{ report.ward|default:"N/A" }}</td>
+                    <td class="cell-text">{{ report.created_at|date:"Y-m-d" }}</td>
+                    <td><span class="badge {% if report.gender == 'female' %}badge-female{% else %}badge-male{% endif %}">{{ report.gender }}</span></td>
+                    <td><span class="status-badge status-{{ report.status }}">{{ report.status }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="empty-state" data-sw="Hakuna ripoti" data-en="No reports">Hakuna ripoti</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if reports.has_other_pages %}
+    <div class="pagination">
+        {% if reports.has_previous %}
+        <a href="?page={{ reports.previous_page_number }}" class="page-link">←</a>
+        {% endif %}
+        <span class="page-current">{{ reports.number }}</span>
+        {% if reports.has_next %}
+        <a href="?page={{ reports.next_page_number }}" class="page-link">→</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

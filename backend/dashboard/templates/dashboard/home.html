@@ -1,0 +1,174 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title" data-sw="Muhtasari" data-en="Overview">Muhtasari</h1>
+        <div class="page-subtitle">
+            <span data-sw="Muhtasari" data-en="Overview">Overview</span> · 
+            <span data-sw="Juni 2026" data-en="June 2026">Juni 2026</span> · 
+            <span data-sw="Dar es Salaam" data-en="Dar es Salaam">Dar es Salaam</span>
+        </div>
+    </div>
+    
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="card-icon">📋</div>
+            <div class="card-info">
+                <div class="card-value" id="total-reports">{{ total_reports|default:0 }}</div>
+                <div class="card-label" data-sw="Ripoti Zote" data-en="Total Reports">Ripoti Zote</div>
+            </div>
+            <span class="pill pill-green">+12%</span>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-icon">👩</div>
+            <div class="card-info">
+                <div class="card-value" id="female-reports">{{ female_pct|default:0 }}%</div>
+                <div class="card-label" data-sw="Wanawake" data-en="Women">Wanawake</div>
+            </div>
+            <span class="pill pill-light-green">{{ female_reports|default:0 }} ripoti</span>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-icon">👨</div>
+            <div class="card-info">
+                <div class="card-value" id="male-reports">{{ male_pct|default:0 }}%</div>
+                <div class="card-label" data-sw="Wanaume" data-en="Men">Wanaume</div>
+            </div>
+            <span class="pill pill-amber">{{ male_reports|default:0 }} ripoti</span>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-icon">⚠️</div>
+            <div class="card-info">
+                <div class="card-value" id="unresolved">{{ unresolved|default:0 }}</div>
+                <div class="card-label" data-sw="Hazijatuliwa" data-en="Unresolved">Hazijatuliwa</div>
+            </div>
+            <span class="pill pill-red">{{ unresolved_pct|default:0 }}% ya jumla</span>
+        </div>
+    </div>
+    
+    <div class="charts-panel">
+        <div class="chart-card">
+            <h3 class="chart-title" data-sw="Ripoti kwa Aina & Jinsia" data-en="Reports by Service & Gender">Ripoti kwa Aina & Jinsia</h3>
+            <canvas id="serviceTypeChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title" data-sw="Mgawanyo wa Jinsia" data-en="Gender Breakdown">Mgawanyo wa Jinsia</h3>
+            <canvas id="genderDonutChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="bottom-panel">
+        <div class="panel-card trend-card">
+            <h3 class="panel-title" data-sw="Mwelekeo wa Wiki 8" data-en="8-Week Trend">Mwelekeo wa Wiki 8</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+        <div class="panel-card heatmap-card">
+            <h3 class="panel-title" data-sw="Ramani ya Joto - Dar es Salaam" data-en="Heatmap - Dar es Salaam">Ramani ya Joto - Dar es Salaam</h3>
+            <div class="heatmap-list" id="municipality-list">
+                {% for muni in by_municipality %}
+                <div class="heatmap-item">
+                    <div class="item-header">
+                        <span class="item-name">{{ muni.municipality }}</span>
+                        <span class="item-count">{{ muni.total }}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio muni.total by_municipality.0.total 100 %}"></div>
+                    </div>
+                    {% if muni.female %}
+                    <div class="item-breakdown">
+                        <span class="female-stat">{{ muni.female }} Female</span>
+                        <span class="male-stat">{{ muni.male }} Male</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="heatmap-item">
+                    <div class="item-header">
+                        <span class="item-name">Kinondoni</span>
+                        <span class="item-count">0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const serviceData = [
+    {% for svc in by_service %}
+    { label: "{{ svc.service_type|capfirst }}", female: {{ svc.female|default:0 }}, male: {{ svc.male|default:0 }} }{% if not forloop.last %},{% endif %}
+    {% empty %}
+    { label: "Water", female: 0, male: 0 },
+    { label: "Sanitation", female: 0, male: 0 },
+    { label: "Lighting", female: 0, male: 0 },
+    { label: "Transport", female: 0, male: 0 }
+    {% endfor %}
+];
+
+const femaleTotal = {{ female_reports|default:0 }};
+const maleTotal = {{ male_reports|default:0 }};
+const total = femaleTotal + maleTotal;
+const femalePct = total > 0 ? Math.round((femaleTotal / total) * 100) : 0;
+const malePct = total > 0 ? 100 - femalePct : 0;
+
+const ctx1 = document.getElementById('serviceTypeChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: serviceData.map(d => d.label),
+        datasets: [
+            { label: 'Female', data: serviceData.map(d => d.female), backgroundColor: '#065f46' },
+            { label: 'Male', data: serviceData.map(d => d.male), backgroundColor: '#d97706' }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { font: { family: 'Inter, sans-serif' } } } }
+    }
+});
+
+const ctx2 = document.getElementById('genderDonutChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: ['Female', 'Male'],
+        datasets: [{
+            data: [femalePct, malePct],
+            backgroundColor: ['#065f46', '#d97706'],
+            borderWidth: 0
+        }]
+    },
+    options: { responsive: true, cutout: '60%' }
+});
+
+const weeks = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'];
+const trendData = {{ weekly_trend|safe }};
+const femaleTrend = trendData.map(d => d.female || 0);
+const maleTrend = trendData.map(d => d.male || 0);
+const ctx3 = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx3, {
+    type: 'line',
+    data: {
+        labels: weeks,
+        datasets: [
+            { label: 'Female', data: femaleTrend, borderColor: '#065f46', tension: 0.4 },
+            { label: 'Male', data: maleTrend, borderColor: '#d97706', tension: 0.4 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { labels: { font: { family: 'Inter, sans-serif' } } } }
+    }
+});
+</script>
+{% endblock %}

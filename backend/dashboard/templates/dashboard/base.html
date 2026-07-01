@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Monitor - Mfumo wa Ufuatiliaji wa Jamii</title>
+    <link rel="stylesheet" href="/static/dashboard/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">CM</span>
+                    <div class="logo-text">
+                        <div class="logo-main">Community Monitor</div>
+                        <div class="logo-sub">Mfumo wa Ufuatiliaji wa Jamii</div>
+                        <div class="logo-sub">- Dar es Salaam</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-badge">
+                <div class="user-info">
+                    <div class="user-name">{{ user.name }}</div>
+                    <div class="user-ward">{{ user.ward }} {{ user.role }}</div>
+                </div>
+                <span class="badge">{{ user.role }}</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="/dashboard/" class="nav-item" id="nav-overview">
+                    <span class="nav-icon">📊</span>
+                    <div class="nav-label">
+                        <span class="nav-label-main" data-sw="Muhtasari" data-en="Overview">Muhtasari</span>
+                        <span class="nav-label-sub" data-sw="Muhtasari" data-en="Overview">Overview</span>
+                    </div>
+                </a>
+                <a href="/dashboard/reports/" class="nav-item" id="nav-reports">
+                    <span class="nav-icon">📋</span>
+                    <div class="nav-label">
+                        <span class="nav-label-main" data-sw="Ripoti" data-en="Reports">Ripoti</span>
+                        <span class="nav-label-sub" data-sw="Ripoti" data-en="Reports">Reports</span>
+                    </div>
+                </a>
+                <a href="/dashboard/analysis/" class="nav-item" id="nav-analysis">
+                    <span class="nav-icon">⚖️</span>
+                    <div class="nav-label">
+                        <span class="nav-label-main" data-sw="Uchambuzi wa Jinsia" data-en="Gender Analysis">Uchambuzi wa Jinsia</span>
+                        <span class="nav-label-sub" data-sw="Uchambuzi wa Jinsia" data-en="Gender Analysis">Gender Analysis</span>
+                    </div>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="sync-status">● Imesawazishwa · Just now</div>
+                <div class="app-version">v2.4.1</div>
+                <div class="app-stats">1,842 ripoti</div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <script src="/static/dashboard/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
