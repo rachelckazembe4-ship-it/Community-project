@@ -9,6 +9,19 @@ $env:POSTGRES_PASSWORD = if ($env:POSTGRES_PASSWORD) { $env:POSTGRES_PASSWORD } 
 $env:POSTGRES_HOST = if ($env:POSTGRES_HOST) { $env:POSTGRES_HOST } else { "localhost" }
 $env:POSTGRES_PORT = if ($env:POSTGRES_PORT) { $env:POSTGRES_PORT } else { "5432" }
 
+function Add-PostgresToolsToPath {
+    $toolDirs = @()
+    $toolDirs += Get-ChildItem "C:\Program Files\PostgreSQL" -Directory -ErrorAction SilentlyContinue |
+        ForEach-Object { Join-Path $_.FullName "bin" }
+    $toolDirs += "C:\Program Files\pgAdmin 4\runtime"
+
+    foreach ($dir in $toolDirs) {
+        if ((Test-Path $dir) -and ($env:Path -notlike "*$dir*")) {
+            $env:Path = "$dir;$env:Path"
+        }
+    }
+}
+
 function Test-PostgresPort {
     $client = New-Object System.Net.Sockets.TcpClient
     try {
@@ -26,6 +39,8 @@ function Test-PostgresPort {
         $client.Close()
     }
 }
+
+Add-PostgresToolsToPath
 
 if (-not (Test-PostgresPort)) {
     $docker = Get-Command docker -ErrorAction SilentlyContinue

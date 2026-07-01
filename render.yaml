@@ -2,8 +2,9 @@ services:
   - type: web
     name: community-project-api
     env: python
-    buildCommand: cd backend && pip install -r requirements.txt && python manage.py migrate --no-input && python manage.py collectstatic --no-input
-    startCommand: cd backend && python -c "from seed_data import create_users, create_reports; create_users(); create_reports()" && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --no-input && python manage.py collectstatic --no-input
+    startCommand: python -c "from seed_data import create_users, create_reports; create_users(); create_reports()" && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: DEBUG
         value: False
