@@ -4,6 +4,14 @@ The backend now uses Postgres by default.
 
 ## Local development
 
+On Windows, run the helper from the project root:
+
+```powershell
+.\setup_postgres.bat
+```
+
+The helper starts the Docker Postgres service if Docker is installed, then installs dependencies, runs migrations, and seeds sample data.
+
 Create a Postgres database named `community_project`, or set your own values with environment variables:
 
 ```powershell
@@ -27,6 +35,12 @@ cd backend
 python manage.py migrate
 python seed_data.py
 python manage.py runserver
+```
+
+If you use Docker, start Postgres from the project root first:
+
+```powershell
+docker compose up -d postgres
 ```
 
 ## Render

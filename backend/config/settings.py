@@ -99,5 +99,14 @@ else:
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
             'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
             'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            'OPTIONS': {
+                'connect_timeout': int(os.environ.get('POSTGRES_CONNECT_TIMEOUT', '5')),
+            },
         }
     }
+
+DATABASES['default'].setdefault('OPTIONS', {})
+DATABASES['default']['OPTIONS'].setdefault(
+    'connect_timeout',
+    int(os.environ.get('POSTGRES_CONNECT_TIMEOUT', '5')),
+)
