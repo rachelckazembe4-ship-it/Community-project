@@ -21,7 +21,7 @@ def create_users():
     
     for officer in officers:
         if not User.objects.filter(email=officer['email']).exists():
-            user = User.objects.create_user(
+            User.objects.create_user(
                 email=officer['email'],
                 username=officer['username'],
                 password='password123',
@@ -29,7 +29,6 @@ def create_users():
                 municipality=officer['municipality'],
                 ward=officer['ward']
             )
-            print(f"Created officer: {officer['username']}")
     
     female_names = ['Amina', 'Halima', 'Maryam', 'Zainab', 'Khadija', 'Saidia', 'Rehema', 'Sakina', 'Mwanahamisi', 'Zawadi']
     male_names = ['Juma', 'Mohamed', 'Hassan', 'Abubakar', 'Omar', 'Rashid', 'Kwame', 'Daniel', 'Emmanuel', 'Joseph']
@@ -40,28 +39,18 @@ def create_users():
             for i in range(10):
                 gender = random.choice(['female', 'male'])
                 name = random.choice(female_names if gender == 'female' else male_names)
-                
                 suffix = random.randint(10000, 99999)
                 email = f"{name.lower()}.{suffix}@example.com"
                 username = f"{name.lower()}_{suffix}"
-                
                 if not User.objects.filter(email=email).exists():
-                    user = User.objects.create_user(
-                        email=email,
-                        username=username,
-                        password='password123',
-                        role='citizen',
-                        municipality=muni,
-                        ward=ward,
-                        street=random.choice(streets)
+                    User.objects.create_user(
+                        email=email, username=username, password='password123', role='citizen',
+                        municipality=muni, ward=ward, street=random.choice(streets)
                     )
-    
-    print(f"Created citizen users")
 
 def create_reports():
     if Report.objects.count() > 0:
         return
-    
     services = ['water', 'sanitation', 'lighting', 'transport']
     statuses = ['pending', 'submitted', 'resolved']
     descriptions = {
@@ -70,30 +59,25 @@ def create_reports():
         'lighting': ['Street light not working for weeks', 'Dark street causing safety concerns', 'Multiple lights broken'],
         'transport': ['Bus stop needs shelter', 'No public transport service', 'Poor road condition for vehicles'],
     }
-    
     users = list(User.objects.filter(role='citizen'))
     if not users:
         return
-    
     for i in range(50):
         user = random.choice(users)
         service = random.choice(services)
         Report.objects.create(
-            reporter=user,
-            service_type=service,
-            municipality=user.municipality,
-            ward=user.ward,
-            street=user.street,
-            description=random.choice(descriptions[service]),
-            gender=random.choice(['female', 'male']),
-            age_group=random.choice(['under18', '18_35', '36_60', 'over60']),
-            report_self=random.choice([True, False]),
-            status=random.choice(statuses),
+            reporter=user, service_type=service, municipality=user.municipality, ward=user.ward,
+            street=user.street, description=random.choice(descriptions[service]),
+            gender=random.choice(['female', 'male']), age_group=random.choice(['under18', '18_35', '36_60', 'over60']),
+            report_self=random.choice([True, False]), status=random.choice(statuses),
             created_at=timezone.now() - timedelta(days=random.randint(0, 60))
         )
 
 if __name__ == '__main__':
-    print("Seeding database...")
-    create_users()
-    create_reports()
-    print("Done!")
+    try:
+        create_users()
+        create_reports()
+        print("Done!")
+    except Exception as e:
+        print(f"Seed error: {e}")
+        raise
