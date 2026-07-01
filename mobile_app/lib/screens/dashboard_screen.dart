@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'report_wizard.dart';
-import '../l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -46,7 +45,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         title: Text(
           l10n?.get('my_ward') ?? 'My Ward',
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF064e3b)),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF064e3b),
+          ),
         ),
         actions: [
           Container(
@@ -58,8 +60,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             child: Center(
               child: Text(
-                _userName?.split(' ').map((n) => n[0]).join().substring(0, min(2, _userName!.split(' ').map((n) => n[0]).join().length)).toUpperCase() ?? 'U',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                _userName
+                        ?.split(' ')
+                        .map((n) => n[0])
+                        .join()
+                        .substring(
+                          0,
+                          min(
+                            2,
+                            _userName!
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join()
+                                .length,
+                          ),
+                        )
+                        .toUpperCase() ??
+                    'U',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -75,7 +96,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 8),
             Text(
               l10n?.get('report_service_issue') ?? 'Report a Service Issue',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF064e3b)),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF064e3b),
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -126,7 +151,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildServiceCard(BuildContext context, {required IconData icon, required String title, required Color color, required VoidCallback onTap}) {
+  Widget _buildServiceCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -145,7 +176,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 12),
               Text(
                 title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -158,7 +192,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReportWizardScreen(preSelectedService: preSelectedService),
+        builder: (context) =>
+            ReportWizardScreen(preSelectedService: preSelectedService),
       ),
     );
   }
