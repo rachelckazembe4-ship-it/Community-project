@@ -4,7 +4,6 @@ services:
     env: python
     buildCommand: cd backend && pip install -r requirements.txt && python manage.py migrate --no-input && python manage.py collectstatic --no-input
     startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
-    postdeployCommand: cd backend && python seed_data.py
     envVars:
       - key: DEBUG
         value: False

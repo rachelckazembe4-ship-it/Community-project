@@ -2,7 +2,6 @@
 import os
 import sys
 import django
-from datetime import datetime, timedelta
 import random
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -10,6 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
 from django.utils import timezone
+from datetime import timedelta
 from reports.models import User, Report
 
 def create_users():
@@ -31,7 +31,6 @@ def create_users():
             )
             print(f"Created officer: {officer['username']}")
     
-    citizens = []
     female_names = ['Amina', 'Halima', 'Maryam', 'Zainab', 'Khadija', 'Saidia', 'Rehema', 'Sakina', 'Mwanahamisi', 'Zawadi']
     male_names = ['Juma', 'Mohamed', 'Hassan', 'Abubakar', 'Omar', 'Rashid', 'Kwame', 'Daniel', 'Emmanuel', 'Joseph']
     streets = ['Mwinjuma Road', 'Samora Avenue', 'Morogoro Road', 'Uhuru Street', 'Mtaa Road', 'Barack Obama Drive', 'Nyerere Road', 'Kitunda Road', 'Kariakoo Street', 'Buguruni Road']
@@ -40,10 +39,7 @@ def create_users():
         for ward in wards[:3]:
             for i in range(10):
                 gender = random.choice(['female', 'male'])
-                if gender == 'female':
-                    name = random.choice(female_names)
-                else:
-                    name = random.choice(male_names)
+                name = random.choice(female_names if gender == 'female' else male_names)
                 
                 suffix = random.randint(10000, 99999)
                 email = f"{name.lower()}.{suffix}@example.com"
@@ -59,33 +55,30 @@ def create_users():
                         ward=ward,
                         street=random.choice(streets)
                     )
-                    citizens.append(user)
     
-    print(f"Created {len(citizens)} citizen users")
+    print(f"Created citizen users")
 
 def create_reports():
     if Report.objects.count() > 0:
-        print(f"Database already has {Report.objects.count()} reports")
         return
     
     services = ['water', 'sanitation', 'lighting', 'transport']
     statuses = ['pending', 'submitted', 'resolved']
     descriptions = {
-        'water': ['No water supply for 3 days', 'Broken water pipe on main road', 'Water quality is poor', 'Frequent water rationing', 'Water pressure too low'],
-        'sanitation': ['Garbage not collected for 2 weeks', 'Blocked drainage system', 'Overflowing public toilet', 'No waste bins in the area', 'Uncollected debris on street'],
-        'lighting': ['Street light not working for weeks', 'Dark street causing safety concerns', 'Multiple lights broken in area', 'Insufficient street lighting', 'Lights out since last storm'],
-        'transport': ['Bus stop needs shelter', 'No public transport service', 'Poor road condition for vehicles', 'Missing pedestrian crossing', 'Bus route not accessible'],
+        'water': ['No water supply for 3 days', 'Broken water pipe on main road', 'Water quality is poor'],
+        'sanitation': ['Garbage not collected for 2 weeks', 'Blocked drainage system', 'Overflowing public toilet'],
+        'lighting': ['Street light not working for weeks', 'Dark street causing safety concerns', 'Multiple lights broken'],
+        'transport': ['Bus stop needs shelter', 'No public transport service', 'Poor road condition for vehicles'],
     }
     
-    users = User.objects.filter(role='citizen')
-    if not users.exists():
-        print("No citizen users found")
+    users = list(User.objects.filter(role='citizen'))
+    if not users:
         return
     
     for i in range(50):
         user = random.choice(users)
         service = random.choice(services)
-        report = Report.objects.create(
+        Report.objects.create(
             reporter=user,
             service_type=service,
             municipality=user.municipality,
@@ -98,16 +91,9 @@ def create_reports():
             status=random.choice(statuses),
             created_at=timezone.now() - timedelta(days=random.randint(0, 60))
         )
-    
-    print(f"Created 50 sample reports")
 
 if __name__ == '__main__':
     print("Seeding database...")
     create_users()
     create_reports()
     print("Done!")
-    
-    total_users = User.objects.count()
-    total_reports = Report.objects.count()
-    print(f"Total users: {total_users}")
-    print(f"Total reports: {total_reports}")
