@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 import '../services/storage_service.dart';
 
-const String baseUrl = 'http://192.168.0.211:8000/api';
+const String baseUrl = 'https://community-project-abtu.onrender.com/api';
 
 class ApiService {
   final StorageService storage = StorageService();
