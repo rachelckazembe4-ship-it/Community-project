@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -5,9 +6,8 @@ from django.conf import settings
 import requests
 import json
 import random
-import random
 
-API_BASE = 'http://localhost:8000/api'
+API_BASE = os.environ.get('API_BASE', 'http://localhost:8000/api')
 
 def get_api_data(endpoint, token=None):
     headers = {}
